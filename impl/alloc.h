@@ -8,26 +8,26 @@ namespace aoi
     namespace impl
     {
         template<class T>
-        class Alloc
+        class Mem
         {
         public:
-            typedef std::function<T*()> NewHandlerType;
-            typedef std::function<void(T*)> DeleteHandlerType;
+            typedef std::function<void*(size_t size)> AllocType;
+            typedef std::function<void(void*)> FreeType;
 
-            static T* New() { return sNewFunc(); }
-            static void Delete(T* ptr) { sDeleteFunc(ptr); }
-            static void SetCustom(const NewHandlerType& f1, const DeleteHandlerType& f2) { sNewFunc = f1;sDeleteFunc = f2; }
+            static void* Alloc(size_t size) { return sAlloc(size); }
+            static void Free(void* ptr) { sFree(ptr); }
+            static void SetCustom(const AllocType& f1, const FreeType& f2) { sAlloc = f1;sFree = f2; }
 
         private:
-            static T* defaultNew() { return new T(); }
-            static void defaultDelete(T* ptr) { delete ptr; }
+            static void* defaultAlloc(size_t size) { return malloc(size); }
+            static void defaultFree(void* ptr) { delete ptr; }
 
-            static NewHandlerType sNewFunc;
-            static DeleteHandlerType sDeleteFunc;
+            static AllocType sAlloc;
+            static FreeType sFree;
         };
 
-        template<class T> typename Alloc<T>::NewHandlerType Alloc<T>::sNewFunc = Alloc<T>::defaultNew;
-        template<class T> typename Alloc<T>::DeleteHandlerType Alloc<T>::sDeleteFunc = Alloc<T>::defaultDelete;
+        template<class T> typename Mem<T>::AllocType Mem<T>::sAlloc = Mem<T>::defaultAlloc;
+        template<class T> typename Mem<T>::FreeType Mem<T>::sFree = Mem<T>::defaultFree;
     }
 }
 

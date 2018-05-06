@@ -1,30 +1,30 @@
 #include <impl/alloc.h>
 #include <stdlib.h>
 
-int* myNew()
+void* myAlloc(size_t size)
 {
-    printf("call myNew\n");
-    return new int();
+    printf("call myAlloc\n");
+    return malloc(size);
 }
 
-void myDelete(int* ptr)
+void myFree(void* ptr)
 {
-    printf("call myDelete\n");
-    delete ptr;
+    printf("call myFree\n");
+    free(ptr);
 }
 
 int main() {
-    aoi::impl::Alloc<int> alloc;
+    aoi::impl::Mem<int> mem;
 
-    int* a = alloc.New();
+    int* a = (int*)mem.Alloc(sizeof(int));
     *a = 1;
-    alloc.Delete(a);
+    mem.Free(a);
 
-    alloc.SetCustom(myNew, myDelete);
+    mem.SetCustom(myAlloc, myFree);
 
-    int* b = alloc.New();
+    int* b = (int*)mem.Alloc(sizeof(int));
     *b = 10;
-    alloc.Delete(b);
+    mem.Free(b);
 
     return 0;
 }
