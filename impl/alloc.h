@@ -16,12 +16,24 @@ namespace aoi
 
             static void* Alloc(size_t size) { return sAlloc(size); }
             static void Free(void* ptr) { sFree(ptr); }
+
+            template<class ... Args>
+            static T* New(Args... args)
+            {
+                void *ptr = sAlloc(sizeof(T));
+                return new (ptr)T(args...);
+            }
+            static void Delete(T* ptr)
+            {
+                ptr->~T();
+                Free(ptr);
+            }
+
             static void SetCustom(const AllocType& f1, const FreeType& f2) { sAlloc = f1;sFree = f2; }
 
         private:
             static void* defaultAlloc(size_t size) { return malloc(size); }
-            static void defaultFree(void* ptr) { delete ptr; }
-
+            static void defaultFree(void* ptr) { free(ptr); }
             static AllocType sAlloc;
             static FreeType sFree;
         };
