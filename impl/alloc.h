@@ -14,26 +14,26 @@ namespace aoi
             typedef std::function<void*(size_t size)> AllocType;
             typedef std::function<void(void*)> FreeType;
 
-            static void* Alloc(size_t size) { return sAlloc(size); }
-            static void Free(void* ptr) { sFree(ptr); }
+            inline static void* Alloc(size_t size) { return sAlloc(size); }
+            inline static void Free(void* ptr) { sFree(ptr); }
 
             template<class ... Args>
-            static T* New(Args... args)
+            inline static T* New(Args... args)
             {
                 void *ptr = sAlloc(sizeof(T));
                 return new (ptr)T(args...);
             }
-            static void Delete(T* ptr)
+            inline static void Delete(T* ptr)
             {
                 ptr->~T();
-                Free(ptr);
+                sFree(ptr);
             }
 
-            static void SetCustom(const AllocType& f1, const FreeType& f2) { sAlloc = f1;sFree = f2; }
+            inline static void SetCustom(const AllocType& f1, const FreeType& f2) { sAlloc = f1;sFree = f2; }
 
         private:
-            static void* defaultAlloc(size_t size) { return malloc(size); }
-            static void defaultFree(void* ptr) { free(ptr); }
+            inline static void* defaultAlloc(size_t size) { return malloc(size); }
+            inline static void defaultFree(void* ptr) { free(ptr); }
             static AllocType sAlloc;
             static FreeType sFree;
         };
