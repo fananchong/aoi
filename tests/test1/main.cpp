@@ -39,8 +39,7 @@ int main() {
     *a = 1;
     mem.Free(a);
 
-    aoi::impl::Mem<A> mem2;
-    mem2.SetCustom(myAlloc, myFree);
+    aoi::impl::Mem<A> mem2(myAlloc, myFree);
 
     A* b = mem2.New();
     mem2.Delete(b);

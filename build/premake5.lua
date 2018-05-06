@@ -41,3 +41,12 @@ project "test1"
         "../tests/test1/*.cpp",
     }
     
+project "test2"
+    kind "ConsoleApp"
+    targetname "test2"
+    libdirs { "../../bin" }
+    files {
+        "../tests/test2/*.h",
+        "../tests/test2/*.cpp",
+    }
+    
