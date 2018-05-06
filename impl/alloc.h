@@ -2,48 +2,65 @@
 #define __AOI_IMPL_ALLOC_H__
 
 #include <functional>
+#include <list>
 
 namespace aoi
 {
     namespace impl
     {
-
-        typedef std::function<void*(size_t size)> AllocType;
-        typedef std::function<void(void*)> FreeType;
-        typedef std::function<void(void)> ReleaseType;
-
-        inline void* defaultAlloc(size_t size) { return malloc(size); }
-        inline void defaultFree(void* ptr) { free(ptr); }
-
-        template<class T>
-        class Mem
+        template<typename T>
+        class MemBase
         {
         public:
-            Mem() : mAlloc(defaultAlloc), mFree(defaultFree), mRelease(nullptr) { }
-            Mem(const AllocType& f1, const FreeType& f2, const ReleaseType& f3 = nullptr) : mAlloc(f1), mFree(f2), mRelease(f3) { }
-            ~Mem() { if (mRelease) { mRelease(); } }
+            MemBase() {}
+            virtual ~MemBase() {}
 
-            inline void* Alloc(size_t size) { return mAlloc(size); }
-            inline void Free(void* ptr) { mFree(ptr); }
+            virtual void* _alloc(size_t size) = 0;
+            virtual void _free(void* ptr) = 0;
 
-            template<class ... Args>
+            template<typename ... Args>
             inline T* New(Args... args)
             {
-                void *ptr = mAlloc(sizeof(T));
+                void *ptr = _alloc(sizeof(T));
                 return new (ptr)T(args...);
             }
             inline void Delete(T* ptr)
             {
                 ptr->~T();
-                mFree(ptr);
+                _free(ptr);
             }
-
-        protected:
-            AllocType mAlloc;
-            FreeType mFree;
-            ReleaseType mRelease;
         };
 
+
+        // TODO: 暂时随便实现下，类接口等跑通
+        template<typename T>
+        class Mem : public MemBase<T>
+        {
+        public:
+            Mem() {}
+            ~Mem()
+            {
+                for (auto it = mHolds.begin(); it != mHolds.end(); it++)
+                {
+                    free(*it);
+                }
+                mHolds.clear();
+            }
+
+            void* _alloc(size_t size) override
+            {
+                void* ptr = malloc(size);
+                mHolds.push_back(ptr);
+                return ptr;
+            }
+
+            void _free(void* ptr) override
+            {
+                // do nothing
+            }
+        private:
+            std::list<void*> mHolds;
+        };
     }
 }
 

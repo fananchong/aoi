@@ -9,14 +9,21 @@ namespace aoi
     namespace impl
     {
 
-        template<typename TItem, unsigned ItemN>
+        template<typename TItem, unsigned ItemN, typename TAlloc = Mem<QuadTreeNode<TItem, ItemN>>>
         class QuadTree {
         public:
+            using TNode = QuadTreeNode<TItem, ItemN>;
 
+            QuadTree() : mRoot(mAlloc, NodeTypeLeaf) {}
+            ~QuadTree() {}
+
+            bool Insert(TItem* item) { return mRoot.Insert(item); }
 
 
         private:
-            Mem<QuadTreeNode<TItem, ItemN>> mRoot;
+            Rect mBounds;        // 节点边框范围
+            TAlloc mAlloc;       // 节点分配器
+            TNode mRoot;         // 根节点
         };
     }
 }

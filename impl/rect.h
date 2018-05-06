@@ -7,19 +7,29 @@ namespace aoi
 {
     namespace impl
     {
+
+        enum EQuadrant
+        {
+            UnknowQuadrant = 0,
+            RightTop = 1,    // 右上：象限一
+            LeftTop = 2,     //左上：象限二
+            LeftDown = 3,    // 左下：象限三
+            RightDown = 4,   // 右下：象限四
+        };
+
         class Rect
         {
         public:
 
-            Rect() : mLeft(0), mRight(0), mTop(0), mBottom(0), mWidth(0), mHeight(0) { }
+            Rect() : mLeft(0), mRight(0), mTop(0), mBottom(0), mMidX(0), mMidY(0) { }
 
             Rect(float left, float top, float right, float bottom)
                 : mLeft(left)
                 , mRight(right)
                 , mTop(top)
                 , mBottom(bottom)
-                , mWidth(right - left)
-                , mHeight(top - bottom)
+                , mMidX(left + (right - left) / 2)
+                , mMidY(bottom + (top - bottom) / 2)
             {
             }
 
@@ -28,8 +38,8 @@ namespace aoi
                 , mRight(other.mRight)
                 , mTop(other.mTop)
                 , mBottom(other.mBottom)
-                , mWidth(other.mRight - other.mLeft)
-                , mHeight(other.mTop - other.mBottom)
+                , mMidX(other.mMidX)
+                , mMidY(other.mMidY)
             {
             }
 
@@ -38,8 +48,8 @@ namespace aoi
                 , mRight(center.X + halfExtents.X)
                 , mTop(center.Y + halfExtents.Y)
                 , mBottom(center.Y - halfExtents.Y)
-                , mWidth(mRight - mLeft)
-                , mHeight(mTop - mBottom)
+                , mMidX(mLeft + (mRight - mLeft) / 2)
+                , mMidY(mBottom + (mTop - mBottom) / 2)
             {
             }
 
@@ -49,18 +59,26 @@ namespace aoi
                 mRight = 0;
                 mTop = 0;
                 mBottom = 0;
-                mWidth = 0;
-                mHeight = 0;
+                mMidX = 0;
+                mMidY = 0;
+            }
+
+            inline void Reset(float left, float top, float right, float bottom)
+            {
+                mLeft = left;
+                mRight = right;
+                mTop = top;
+                mBottom = bottom;
+                mMidX = left + (right - left) / 2;
+                mMidY = bottom + (top - bottom) / 2;
             }
 
             inline float Left() const { return mLeft; }
             inline float Right() const { return mRight; }
             inline float Bottom() const { return mBottom; }
             inline float Top() const { return mTop; }
-            inline float MidX() const { return mLeft + mWidth / 2; }
-            inline float MidY() const { return mBottom + mHeight / 2; }
-
-            inline bool Empty() const { return mWidth == 0 && mHeight == 0; }
+            inline float MidX() const { return mMidX; }
+            inline float MidY() const { return mMidY; }
 
             inline bool Contains(const Rect& Rect) const
             {
@@ -89,13 +107,25 @@ namespace aoi
                     || Rect.mTop < mBottom);
             }
 
+            inline EQuadrant GetQuadrant(const Point& point)
+            {
+                return Contains(point) ? GetQuadrant2(point) : UnknowQuadrant;
+            }
+
+            inline EQuadrant GetQuadrant2(const Point& point)
+            {
+                return (point.Y >= mMidY
+                    ? (point.X >= mMidX ? RightTop : LeftTop)
+                    : (point.X >= mMidX ? RightDown : LeftDown));
+            }
+
         private:
             float mLeft;
             float mRight;
             float mTop;
             float mBottom;
-            float mWidth;
-            float mHeight;
+            float mMidX;
+            float mMidY;
         };
     }
 }

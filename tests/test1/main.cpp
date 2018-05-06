@@ -1,18 +1,6 @@
 #include <impl/alloc.h>
 #include <stdlib.h>
 
-void* myAlloc(size_t size)
-{
-    printf("call myAlloc\n");
-    return malloc(size);
-}
-
-void myFree(void* ptr)
-{
-    printf("call myFree\n");
-    free(ptr);
-}
-
 class A
 {
 public:
@@ -33,19 +21,13 @@ public:
 };
 
 int main() {
-    aoi::impl::Mem<int> mem;
+    aoi::impl::Mem<A> mem;
 
-    int* a = (int*)mem.Alloc(sizeof(int));
-    *a = 1;
-    mem.Free(a);
+    A* b = mem.New();
+    mem.Delete(b);
 
-    aoi::impl::Mem<A> mem2(myAlloc, myFree);
-
-    A* b = mem2.New();
-    mem2.Delete(b);
-
-    A* c = mem2.New(1, 1.2f);
-    mem2.Delete(c);
+    A* c = mem.New(1, 1.2f);
+    mem.Delete(c);
 
 
     return 0;
