@@ -2,7 +2,7 @@
 #define __AOI_IMPL_ALLOC_H__
 
 #include <functional>
-#include <list>
+#include <cassert>
 
 namespace aoi
 {
@@ -31,35 +31,77 @@ namespace aoi
             }
         };
 
-
-        // TODO: 暂时随便实现下，类接口等跑通
-        template<typename T>
+        template<typename T, unsigned BlockSize = 4096>
         class Mem : public MemBase<T>
         {
         public:
-            Mem() {}
+            Mem()
+                : mBlocks(nullptr)
+                , mHead(nullptr)
+            {
+            }
+
             ~Mem()
             {
-                for (auto it = mHolds.begin(); it != mHolds.end(); it++)
+                while (mBlocks)
                 {
-                    free(*it);
+                    Item* next = mBlocks->next;
+                    free(mBlocks);
+                    mBlocks = next;
                 }
-                mHolds.clear();
             }
 
             void* _alloc(size_t size) override
             {
-                void* ptr = malloc(size);
-                mHolds.push_back(ptr);
+                if (!mHead)
+                {
+                    newBlock();
+                }
+                void* ptr = mHead;
+                mHead = mHead->next;
                 return ptr;
             }
 
             void _free(void* ptr) override
             {
-                // do nothing
+                Item* p = (Item*)ptr;
+                p->next = mHead;
+                mHead = p;
             }
+
         private:
-            std::list<void*> mHolds;
+            void newBlock()
+            {
+                assert(!mHead);
+                Item* ptr = (Item*)malloc(BlockSize);
+                if (mBlocks)
+                {
+                    ptr->next = mBlocks;
+                    mBlocks = ptr;
+                }
+                else
+                {
+                    mBlocks = ptr;
+                    mBlocks->next = 0;
+                }
+
+#define MYITEMPTR(N) ((Item*)((char*)ptr + (N) * sizeof(T)))
+
+                mHead = MYITEMPTR(1);
+                size_t lst = BlockSize / sizeof(T) - 1;
+                for (size_t i = 1; i < lst; i++)
+                {
+                    MYITEMPTR(i)->next = MYITEMPTR(i + 1);
+                }
+                MYITEMPTR(lst)->next = nullptr;
+            }
+
+            struct Item
+            {
+                Item* next;
+            };
+            Item* mBlocks;
+            Item* mHead;
         };
     }
 }

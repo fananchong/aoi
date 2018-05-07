@@ -15,37 +15,39 @@ namespace aoi
             NodeTypeLeaf = 1,    // 叶子节点
         };
 
-        template<typename TItem, unsigned ItemN>
+        const unsigned ChildrenNum = 4;
+
+        template<typename TItem, unsigned NodeCapacity>
         class QuadTreeNode
         {
         public:
-            using TNode = QuadTreeNode<TItem, ItemN>;
+            using TNode = QuadTreeNode<TItem, NodeCapacity>;
 
-            QuadTreeNode(MemBase<TNode>* alloc, ENodeType type, QuadTreeNode* parent = nullptr);
+            QuadTreeNode(MemBase<TNode>* alloc, ENodeType type, QuadTreeNode* parent, const Rect& bounds);
             ~QuadTreeNode();
 
-            void Reset();
             bool Insert(TItem* item);
+            bool Remove(TItem* item);
+            void Query(const Rect& area, TItem*& head, TItem*& tail);
+            unsigned GetItemCount();
 
         public:
-            Rect mBounds;                      // 节点边框范围
-            QuadTreeNode* mParent;             // 父节点
-            ENodeType mNodeType;               // 节点类型
-            union
-            {
-                QuadTreeNode* mChildrens[4];   // 孩子节点
-                struct
-                {
-                    unsigned mItemCount;       // 叶子节点上的Item数量
-                    TItem* mItems[ItemN];      // 叶子节点上的Items
-                };
-            };
+#ifdef _DEBUG
+            unsigned mLevel;
+#endif
+            Rect mBounds;                            // 节点边框范围
+            QuadTreeNode* mParent;                   // 父节点
+            ENodeType mNodeType;                     // 节点类型
+            QuadTreeNode* mChildrens[ChildrenNum];   // 孩子节点
+            unsigned mItemCount;                 // 叶子节点上的Item数量
+            TItem* mItems[NodeCapacity];         // 叶子节点上的Items
 
             // TODO: 邻居信息
 
         private:
-            MemBase<TNode>* mAlloc;                // 节点分配器
-            void createChildrens();
+            MemBase<TNode>* mAlloc;                 // 节点分配器
+            void split();
+            void tryMerge();
         };
     }
 }
