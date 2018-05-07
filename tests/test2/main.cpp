@@ -167,7 +167,7 @@ void test3()
     auto t2 = get_tick_count();
     printf("rand cost:%lldns %fns/op\n", t2 - t1, float(t2 - t1) / COUNT);
     long long ttr = t2 - t1;
-    long long ttrop = long long(float(t2 - t1) / COUNT);
+    long long ttrop = (long long)(float(t2 - t1) / COUNT);
 
     std::vector<A*> items;
 
