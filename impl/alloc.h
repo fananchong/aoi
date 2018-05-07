@@ -133,7 +133,7 @@ namespace aoi
 #ifdef _MSC_VER
             AlignedMem() : Blocks<T, BlockSize>(std::bind(_aligned_malloc, std::placeholders::_1, Alignment), _aligned_free)
 #else
-            AlignedMem() : Blocks<T, BlockSize>(std::bind(aligned_alloc, std::placeholders::_1, Alignment), free)
+            AlignedMem() : Blocks<T, BlockSize>(std::bind(aligned_alloc, Alignment, std::placeholders::_1), free)
 #endif
             {
             }
