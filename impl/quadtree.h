@@ -14,7 +14,7 @@ namespace aoi
         public:
             using TNode = QuadTreeNode<TItem, ItemN>;
 
-            QuadTree() : mRoot(mAlloc, NodeTypeLeaf) {}
+            QuadTree() : mRoot(&mAlloc, NodeTypeLeaf) {}
             ~QuadTree() {}
 
             bool Insert(TItem* item) { return mRoot.Insert(item); }

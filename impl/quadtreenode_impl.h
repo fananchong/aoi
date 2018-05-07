@@ -6,7 +6,7 @@ namespace aoi
     namespace impl
     {
         template<typename TItem, unsigned ItemN>
-        QuadTreeNode<TItem, ItemN>::QuadTreeNode(Mem<TNode>& alloc, ENodeType type, QuadTreeNode* parent)
+        QuadTreeNode<TItem, ItemN>::QuadTreeNode(MemBase<TNode>* alloc, ENodeType type, QuadTreeNode* parent)
             : mAlloc(alloc)
             , mParent(parent)
             , mNodeType(type)
@@ -63,7 +63,7 @@ namespace aoi
 
             for (size_t i = 0; i < sizeof(mChildrens) / sizeof(mChildrens[0]); i++)
             {
-                mChildrens[i] = mAlloc.New(mAlloc, NodeTypeLeaf, this);
+                mChildrens[i] = mAlloc->New(mAlloc, NodeTypeLeaf, this);
             }
 
             // 第一象限，右上

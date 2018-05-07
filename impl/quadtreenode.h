@@ -21,14 +21,13 @@ namespace aoi
         public:
             using TNode = QuadTreeNode<TItem, ItemN>;
 
-            QuadTreeNode(Mem<TNode>& alloc, ENodeType type, QuadTreeNode* parent = nullptr);
+            QuadTreeNode(MemBase<TNode>* alloc, ENodeType type, QuadTreeNode* parent = nullptr);
             ~QuadTreeNode();
 
             void Reset();
             bool Insert(TItem* item);
 
         public:
-            Mem<TNode>& mAlloc;                // 节点分配器
             Rect mBounds;                      // 节点边框范围
             QuadTreeNode* mParent;             // 父节点
             ENodeType mNodeType;               // 节点类型
@@ -45,6 +44,7 @@ namespace aoi
             // TODO: 邻居信息
 
         private:
+            MemBase<TNode>* mAlloc;                // 节点分配器
             void createChildrens();
         };
     }
