@@ -4,6 +4,16 @@
 #include <vector>
 #include <algorithm>
 
+#include <chrono>
+
+
+long long get_tick_count(void)
+{
+    typedef std::chrono::time_point<std::chrono::system_clock, std::chrono::nanoseconds> nanoClock_type;
+    nanoClock_type tp = std::chrono::time_point_cast<std::chrono::nanoseconds>(std::chrono::system_clock::now());
+    return tp.time_since_epoch().count();
+}
+
 #ifdef _DEBUG
 #define myassert(X) assert(X)
 #else
@@ -30,8 +40,8 @@ typedef aoi::Scene<A, 16> SceneType;
 
 void _test_add(SceneType& scn, std::vector<A*>& items)
 {
-    float x = float(rand() % 1000);
-    float y = float(rand() % 1000);
+    float x = float(rand() % int(scn.GetBounds().Right() - scn.GetBounds().Left())) + scn.GetBounds().Left();
+    float y = float(rand() % int(scn.GetBounds().Top() - scn.GetBounds().Bottom())) + scn.GetBounds().Bottom();
     A* temp = new A(x, y);
     myassert(scn.Insert(temp));
     items.push_back(temp);
@@ -45,7 +55,7 @@ void _test_delete(SceneType& scn, std::vector<A*>& items, size_t count)
         return;
     }
     std::random_shuffle(items.begin(), items.end());
-    for (size_t i = 0; i < std::min(count, itemsNum); i++)
+    for (size_t i = 0; i < (std::min)(count, itemsNum); i++)
     {
         A* temp = items.back();
         myassert(scn.Remove(temp));
@@ -58,10 +68,10 @@ void _test_query(SceneType& scn, std::vector<A*>& items)
 {
     unsigned testCount = 0;
     aoi::Rect queryArea = aoi::Rect(
-        float(rand() % 100),
-        float(rand() % 1000),
-        float(rand() % 100),
-        float(rand() % 1000));
+        float(rand() % 10),
+        float(rand() % int(scn.GetBounds().Right() - scn.GetBounds().Left())) + scn.GetBounds().Left(),
+        float(rand() % 10),
+        float(rand() % int(scn.GetBounds().Top() - scn.GetBounds().Bottom())) + scn.GetBounds().Bottom());
 
     for (size_t i = 0; i < items.size(); i++)
     {
@@ -136,12 +146,46 @@ void test2()
     }
 }
 
+void test3()
+{
+    unsigned w = 8000;
+    unsigned h = 8000;
+    unsigned r = 50;
+
+    aoi::Rect rect(0, float(w), 0, float(h));
+    SceneType scn(rect);
+
+
+    size_t COUNT = 5000;
+
+    std::vector<A*> items;
+
+    auto t1 = get_tick_count();
+    for (size_t i = 0; i < COUNT; i++)
+    {
+        _test_add(scn, items);
+    }
+    auto t2 = get_tick_count();
+    printf("insert cost:%lldns %fns/op\n", t2 - t1, float(t2 - t1) / COUNT);
+
+    t1 = get_tick_count();
+    for (size_t i = 0; i < COUNT; i++)
+    {
+        float x = float(rand() % (w - r));
+        float y = float(rand() % (h - r));
+        aoi::Object* ptr = scn.Query(aoi::Rect(x, x + r, y, y + r));
+    }
+    t2 = get_tick_count();
+    printf("query cost:%lldns %fns/op\n", t2 - t1, float(t2 - t1) / COUNT);
+}
+
 int main()
 {
     srand((unsigned)time(0));
 
     test1();
-    test2();
+    //test2();
+    test3();
 
     return 0;
 }

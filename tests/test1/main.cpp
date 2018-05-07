@@ -1,24 +1,13 @@
 #include <impl/alloc.h>
 #include <stdlib.h>
+#include <chrono>
 
-#ifdef _MSC_VER
-#include <Windows.h>
-#elif defined(__GNUC__)
-#include <sys/sysinfo.h>
-#include <sys/time.h>
-#endif
 
-unsigned long get_tick_count(void)
+long long get_tick_count(void)
 {
-    unsigned long current_time;
-#ifdef _MSC_VER
-    current_time = GetTickCount();
-#else
-    struct timeval current;
-    gettimeofday(&current, NULL);
-    current_time = current.tv_sec * 1000 + current.tv_usec / 1000;
-#endif
-    return current_time;
+    typedef std::chrono::time_point<std::chrono::system_clock, std::chrono::milliseconds> microClock_type;
+    microClock_type tp = std::chrono::time_point_cast<std::chrono::milliseconds>(std::chrono::system_clock::now());
+    return tp.time_since_epoch().count();
 }
 
 class A
@@ -53,7 +42,6 @@ int main() {
     A* c = mem.New(1, 1.2f);
     mem.Delete(c);
 
-
     size_t COUNT = 10000000;
 
     auto t1 = get_tick_count();
@@ -64,7 +52,7 @@ int main() {
         delete temp;
     }
     auto t2 = get_tick_count();
-    printf("new cost:%lu\n", t2 - t1);
+    printf("new cost:%lld\n", t2 - t1);
 
     aoi::impl::Mem<A> mem2;
     t1 = get_tick_count();
@@ -75,7 +63,7 @@ int main() {
         mem2.Delete(temp);
     }
     t2 = get_tick_count();
-    printf("mem cost:%lu\n", t2 - t1);
+    printf("mem cost:%lld\n", t2 - t1);
 
     aoi::impl::AlignedMem<A> mem3;
     t1 = get_tick_count();
@@ -86,7 +74,7 @@ int main() {
         mem3.Delete(temp);
     }
     t2 = get_tick_count();
-    printf("aligned mem cost:%lu\n", t2 - t1);
+    printf("aligned mem cost:%lld\n", t2 - t1);
 
     return 0;
 }

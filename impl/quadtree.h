@@ -35,8 +35,9 @@ namespace aoi
 
             unsigned GetItemCount() { return mRoot.GetItemCount(); }
 
+            Rect& GetBounds() { return mRoot.mBounds; }
+
         private:
-            Rect mBounds;        // 节点边框范围
             TAlloc mAlloc;       // 节点分配器
             TNode mRoot;         // 根节点
         };
