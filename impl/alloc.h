@@ -32,26 +32,31 @@ namespace aoi
         };
 
         template<typename T, unsigned BlockSize = 4096>
-        class Mem : public MemBase<T>
+        class Blocks : public MemBase<T>
         {
         public:
-            Mem()
+            using TMallocFunc = std::function<void*(size_t)>;
+            using TFreeFunc = std::function<void(void*)>;
+
+            Blocks(const TMallocFunc& f1, const TFreeFunc& f2)
                 : mBlocks(nullptr)
                 , mHead(nullptr)
+                , mMalloc(f1)
+                , mFree(f2)
             {
             }
 
-            ~Mem()
+            ~Blocks()
             {
                 while (mBlocks)
                 {
                     Item* next = mBlocks->next;
-                    free(mBlocks);
+                    mFree(mBlocks);
                     mBlocks = next;
                 }
             }
 
-            void* _alloc(size_t size) override
+            void* _alloc(size_t size)
             {
                 if (!mHead)
                 {
@@ -62,7 +67,7 @@ namespace aoi
                 return ptr;
             }
 
-            void _free(void* ptr) override
+            void _free(void* ptr)
             {
                 Item* p = (Item*)ptr;
                 p->next = mHead;
@@ -73,7 +78,7 @@ namespace aoi
             void newBlock()
             {
                 assert(!mHead);
-                Item* ptr = (Item*)malloc(BlockSize);
+                Item* ptr = (Item*)mMalloc(BlockSize);
                 if (mBlocks)
                 {
                     ptr->next = mBlocks;
@@ -103,6 +108,39 @@ namespace aoi
             };
             Item* mBlocks;
             Item* mHead;
+            TMallocFunc mMalloc;
+            TFreeFunc mFree;
+        };
+
+
+        template<typename T, unsigned BlockSize = 4096>
+        class Mem : public Blocks<T, BlockSize>
+        {
+        public:
+            Mem() : Blocks<T, BlockSize>(malloc, free)
+            {
+            }
+
+            ~Mem()
+            {
+            }
+        };
+
+        template<typename T, unsigned BlockSize = 4096, unsigned Alignment = 4>
+        class AlignedMem : public Blocks<T, BlockSize>
+        {
+        public:
+#ifdef _MSC_VER
+            AlignedMem() : Blocks<T, BlockSize>(std::bind(_aligned_malloc, std::placeholders::_1, Alignment), _aligned_free)
+#else
+            AlignedMem() : Blocks<T, BlockSize>(std::bind(aligned_alloc, std::placeholders::_1, Alignment), aligned_free)
+#endif
+            {
+            }
+
+            ~AlignedMem()
+            {
+            }
         };
     }
 }
