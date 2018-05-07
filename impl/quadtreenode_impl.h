@@ -1,5 +1,6 @@
 #include "point.h"
 #include <cassert>
+#include <string.h>
 
 namespace aoi
 {
