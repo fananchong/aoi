@@ -84,16 +84,17 @@ namespace aoi
                     mBlocks = ptr;
                     mBlocks->next = 0;
                 }
+                ptr = ptr + 1;
 
-#define MYITEMPTR(N) ((Item*)((char*)ptr + (N) * sizeof(T)))
-
-                mHead = MYITEMPTR(1);
-                size_t lst = BlockSize / sizeof(T) - 1;
-                for (size_t i = 1; i < lst; i++)
+#define PTR(N) ((Item*)((char*)ptr + (N) * sizeof(T)))
+                mHead = PTR(0);
+                size_t lstIndex = (BlockSize - sizeof(Item)) / sizeof(T) - 1;
+                for (size_t i = 0; i < lstIndex; i++)
                 {
-                    MYITEMPTR(i)->next = MYITEMPTR(i + 1);
+                    PTR(i)->next = PTR(i + 1);
                 }
-                MYITEMPTR(lst)->next = nullptr;
+                PTR(lstIndex)->next = nullptr;
+#undef PTR
             }
 
             struct Item
