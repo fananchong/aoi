@@ -158,15 +158,26 @@ void test3()
 
     size_t COUNT = 5000;
 
+    auto t1 = get_tick_count();
+    for (size_t i = 0; i < COUNT; i++)
+    {
+        rand();
+        rand();
+    }
+    auto t2 = get_tick_count();
+    printf("rand cost:%lldns %fns/op\n", t2 - t1, float(t2 - t1) / COUNT);
+    long long ttr = t2 - t1;
+    long long ttrop = long long(float(t2 - t1) / COUNT);
+
     std::vector<A*> items;
 
-    auto t1 = get_tick_count();
+    t1 = get_tick_count();
     for (size_t i = 0; i < COUNT; i++)
     {
         _test_add(scn, items);
     }
-    auto t2 = get_tick_count();
-    printf("insert cost:%lldns %fns/op\n", t2 - t1, float(t2 - t1) / COUNT);
+    t2 = get_tick_count();
+    printf("insert cost:%lldns %fns/op\n", t2 - t1 - ttr, float(t2 - t1) / COUNT - ttrop);
 
     t1 = get_tick_count();
     for (size_t i = 0; i < COUNT; i++)
@@ -176,7 +187,7 @@ void test3()
         aoi::Object* ptr = scn.Query(aoi::Rect(x, x + r, y, y + r));
     }
     t2 = get_tick_count();
-    printf("query cost:%lldns %fns/op\n", t2 - t1, float(t2 - t1) / COUNT);
+    printf("query cost:%lldns %fns/op\n", t2 - t1 - ttr, float(t2 - t1) / COUNT - ttrop);
 }
 
 int main()
