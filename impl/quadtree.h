@@ -8,7 +8,7 @@ namespace aoi
 {
     namespace impl
     {
-        template<typename TItem, unsigned NodeCapacity, typename TAlloc = Mem<QuadTreeNode<TItem, NodeCapacity>>>
+        template<typename TItem, unsigned NodeCapacity, typename TAlloc = AlignedMem<QuadTreeNode<TItem, NodeCapacity>>>
         class QuadTree {
         public:
             using TNode = QuadTreeNode<TItem, NodeCapacity>;
@@ -29,7 +29,7 @@ namespace aoi
                 TItem* head = nullptr;
                 TItem* tail = nullptr;
                 mRoot.Query(area, head, tail);
-                tail ? tail->mNext = nullptr : 0;
+                tail ? tail->mQueryNext = nullptr : 0;
                 return head;
             }
 

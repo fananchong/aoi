@@ -39,13 +39,13 @@ namespace aoi
             QuadTreeNode* mParent;                   // 父节点
             ENodeType mNodeType;                     // 节点类型
             QuadTreeNode* mChildrens[ChildrenNum];   // 孩子节点
-            unsigned mItemCount;                 // 叶子节点上的Item数量
-            TItem* mItems[NodeCapacity];         // 叶子节点上的Items
+            unsigned mItemCount;                     // 叶子节点上的Item数量
+            TItem* mItems;                           // 叶子节点上的Items
 
             // TODO: 邻居信息
 
         private:
-            MemBase<TNode>* mAlloc;                 // 节点分配器
+            MemBase<TNode>* mAlloc;                  // 节点分配器
             void split();
             void tryMerge();
         };

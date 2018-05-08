@@ -13,6 +13,7 @@ namespace aoi
             , mNodeType(type)
             , mBounds(bounds)
             , mItemCount(0)
+            , mItems(nullptr)
 #ifdef _DEBUG
             , mLevel(0)
 #endif
@@ -41,9 +42,18 @@ namespace aoi
             {
                 if (mItemCount < NodeCapacity)
                 {
-                    return mBounds.Contains(pos)
-                        ? (mItems[mItemCount++] = item, item->mNode = this, true)
-                        : false;
+                    if (mBounds.Contains(pos))
+                    {
+                        mItemCount++;
+                        item->mItemNext = mItems;
+                        mItems = item;
+                        item->mNode = this;
+                        return true;
+                    }
+                    else
+                    {
+                        return false;
+                    }
                 }
                 else
                 {
@@ -88,29 +98,39 @@ namespace aoi
             mChildrens[3]->mLevel = mLevel + 1;
 #endif
 
-            for (size_t i = 0; i < mItemCount; i++)
+            for (TItem* it = mItems; it;)
             {
-                Point& pos = mItems[i]->GetPos();
+                TItem* head = (TItem*)(it->mItemNext);
+                Point& pos = it->GetPos();
                 int index = mBounds.GetQuadrant2(pos) - 1;
-                mChildrens[index]->Insert(mItems[i]);
+                mChildrens[index]->Insert(it);
+                it = head;
             }
             mItemCount = 0;
+            mItems = nullptr;
         }
 
         template<typename TItem, unsigned NodeCapacity>
         bool QuadTreeNode<TItem, NodeCapacity>::Remove(TItem* item)
         {
             assert(mNodeType == NodeTypeLeaf);
-            for (size_t i = 0; i < mItemCount; i++)
+            assert(mItems);
+            TItem* pre = nullptr;
+            for (TItem* it = mItems; it;)
             {
-                if (mItems[i] == item)
+                TItem* head = (TItem*)(it->mItemNext);
+                if (it == item)
                 {
-                    unsigned lst = --mItemCount;
-                    mItems[i] = mItems[lst];
-                    mItems[lst] = nullptr;
+                    --mItemCount;
+                    pre ? pre->mItemNext = it->mItemNext : mItems = (TItem*)(mItems->mItemNext);
                     tryMerge();
                     return true;
                 }
+                else
+                {
+                    pre = it;
+                }
+                it = head;
             }
             return false;
         }
@@ -139,13 +159,17 @@ namespace aoi
 #endif
                     node->mNodeType = NodeTypeLeaf;
                     node->mItemCount = 0;
+                    node->mItems = nullptr;
                     for (size_t i = 0; i < ChildrenNum; i++)
                     {
-                        for (size_t j = 0; j < childrens[i]->mItemCount; j++)
+                        for (TItem* it = childrens[i]->mItems; it;)
                         {
-                            TItem* tempItem = childrens[i]->mItems[j];
-                            node->mItems[node->mItemCount++] = tempItem;
-                            tempItem->mNode = node;
+                            TItem* head = (TItem*)(it->mItemNext);
+                            node->mItemCount++;
+                            it->mItemNext = node->mItems;
+                            node->mItems = it;
+                            it->mNode = node;
+                            it = head;
                         }
                         mAlloc->Delete(childrens[i]);
                     }
@@ -173,12 +197,12 @@ namespace aoi
             }
             else
             {
-                for (size_t i = 0; i < mItemCount; i++)
+                for (TItem* it = mItems; it; it = (TItem*)(it->mItemNext))
                 {
-                    Point& pos = mItems[i]->GetPos();
+                    Point& pos = it->GetPos();
                     if (area.Contains(pos))
                     {
-                        head ? (tail->mNext = mItems[i], tail = mItems[i]) : head = tail = mItems[i];
+                        head ? (tail->mQueryNext = it, tail = it) : head = tail = it;
                     }
                 }
             }

@@ -9,22 +9,23 @@ namespace aoi
     class Object
     {
     public:
-        Object() : mNode(nullptr), mNext(nullptr) {}
+        Object() : mNode(nullptr), mQueryNext(nullptr), mItemNext(nullptr) {}
         virtual ~Object() {}
 
         virtual Point& GetPos() = 0;
 
-        inline Object* Next() { return mNext; }
+        inline Object* Next() { return mQueryNext; }
 
     private:
         void* mNode;
-        Object* mNext;
+        Object* mQueryNext;
+        void* mItemNext;
 
         template<typename TItem, unsigned NodeCapacity, typename TAlloc> friend class impl::QuadTree;
         template<typename TItem, unsigned NodeCapacity> friend class impl::QuadTreeNode;
     };
 
-    template<typename TItem, unsigned NodeCapacity, typename TAlloc = impl::Mem<impl::QuadTreeNode<TItem, NodeCapacity>>>
+    template<typename TItem, unsigned NodeCapacity, typename TAlloc = impl::AlignedMem<impl::QuadTreeNode<TItem, NodeCapacity>>>
     using Scene = impl::QuadTree<TItem, NodeCapacity, TAlloc>;
 }
 
