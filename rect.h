@@ -60,7 +60,7 @@ namespace aoi
             mMidY = 0;
         }
 
-        inline void Reset(float left, float top, float right, float bottom)
+        inline void Reset(float left, float right, float bottom, float top)
         {
             mLeft = left;
             mRight = right;
@@ -96,6 +96,11 @@ namespace aoi
             return Contains(point.X, point.Y);
         }
 
+        inline bool Contains(const Point* point) const
+        {
+            return Contains(point->X, point->Y);
+        }
+
         inline bool Intersects(const Rect& Rect) const
         {
             return !(mRight < Rect.mLeft
@@ -109,11 +114,21 @@ namespace aoi
             return Contains(point) ? GetQuadrant2(point) : UnknowQuadrant;
         }
 
+        inline EQuadrant GetQuadrant(const Point* point)
+        {
+            return GetQuadrant(*point);
+        }
+
         inline EQuadrant GetQuadrant2(const Point& point)
         {
             return (point.Y >= mMidY
                 ? (point.X >= mMidX ? RightTop : LeftTop)
                 : (point.X >= mMidX ? RightDown : LeftDown));
+        }
+
+        inline EQuadrant GetQuadrant2(const Point* point)
+        {
+            return GetQuadrant2(*point);
         }
 
     private:

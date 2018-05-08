@@ -25,13 +25,10 @@ if (!(X))\
 #endif
 
 // 需要继承 aoi::Object
-class A : public aoi::Object, public aoi::Point
+class A : public aoi::Object
 {
 public:
-    A(float x, float y) : aoi::Point(x, y) {}
-
-    // 需要实现以下接口
-    aoi::Point& GetPos() override { return *(aoi::Point*)this; }
+    A(float x, float y) : aoi::Object(x, y) {}
 
 private:
 };
@@ -75,8 +72,7 @@ void _test_query(SceneType& scn, std::vector<A*>& items)
 
     for (size_t i = 0; i < items.size(); i++)
     {
-        auto& pos = items[i]->GetPos();
-        if (queryArea.Contains(pos))
+        if (queryArea.Contains(items[i]))
         {
             testCount++;
         }

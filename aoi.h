@@ -6,13 +6,12 @@
 
 namespace aoi
 {
-    class Object
+    class Object : public Point
     {
     public:
-        Object() : mNode(nullptr), mQueryNext(nullptr), mItemNext(nullptr) {}
+        Object() : Point(), mNode(nullptr), mQueryNext(nullptr), mItemNext(nullptr) {}
+        Object(float x, float y) : Point(x, y), mNode(nullptr), mQueryNext(nullptr), mItemNext(nullptr) {}
         virtual ~Object() {}
-
-        virtual Point& GetPos() = 0;
 
         inline Object* Next() { return mQueryNext; }
 

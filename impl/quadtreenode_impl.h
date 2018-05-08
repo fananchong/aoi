@@ -1,4 +1,4 @@
-#include "point.h"
+#include "../point.h"
 #include <cassert>
 #include <string.h>
 
@@ -30,19 +30,17 @@ namespace aoi
         template<typename TItem, unsigned NodeCapacity>
         bool QuadTreeNode<TItem, NodeCapacity>::Insert(TItem* item)
         {
-            Point& pos = item->GetPos();
-
             if (mNodeType == NodeTypeNormal)
             {
             LABLE_NORMAL:
-                int index = mBounds.GetQuadrant(pos) - 1;
+                int index = mBounds.GetQuadrant(item) - 1;
                 return index >= 0 ? mChildrens[index]->Insert(item) : false;
             }
             else
             {
                 if (mItemCount < NodeCapacity)
                 {
-                    if (mBounds.Contains(pos))
+                    if (mBounds.Contains(item))
                     {
                         mItemCount++;
                         item->mItemNext = mItems;
@@ -101,8 +99,7 @@ namespace aoi
             for (TItem* it = mItems; it;)
             {
                 TItem* head = (TItem*)(it->mItemNext);
-                Point& pos = it->GetPos();
-                int index = mBounds.GetQuadrant2(pos) - 1;
+                int index = mBounds.GetQuadrant2(it) - 1;
                 mChildrens[index]->Insert(it);
                 it = head;
             }
@@ -199,8 +196,7 @@ namespace aoi
             {
                 for (TItem* it = mItems; it; it = (TItem*)(it->mItemNext))
                 {
-                    Point& pos = it->GetPos();
-                    if (area.Contains(pos))
+                    if (area.Contains(it))
                     {
                         head ? (tail->mQueryNext = it, tail = it) : head = tail = it;
                     }

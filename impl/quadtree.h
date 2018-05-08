@@ -13,6 +13,7 @@ namespace aoi
         public:
             using TNode = QuadTreeNode<TItem, NodeCapacity>;
 
+            QuadTree() : mRoot(&mAlloc, NodeTypeLeaf, nullptr, Rect()) {}
             QuadTree(const Rect& bounds) : mRoot(&mAlloc, NodeTypeLeaf, nullptr, bounds) {}
             ~QuadTree() {}
 
@@ -33,9 +34,24 @@ namespace aoi
                 return head;
             }
 
+            bool Update(TItem* item)
+            {
+                TNode* node = (TNode*)item->mNode;
+                if (node)
+                {
+                    if (node->mBounds.Contains(item))
+                    {
+                        return true;
+                    }
+                    node->Remove(item);
+                }
+                return mRoot.Insert(item);
+            }
+
             unsigned GetItemCount() { return mRoot.GetItemCount(); }
 
-            Rect& GetBounds() { return mRoot.mBounds; }
+            inline Rect& GetBounds() { return mRoot.mBounds; }
+            inline void SetBounds(const Rect& rect) { mRoot.mBounds = rect; }
 
         private:
             TAlloc mAlloc;       // ½Úµã·ÖÅäÆ÷
