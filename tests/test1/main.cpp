@@ -35,7 +35,7 @@ public:
     char d1[168];
 };
 
-typedef aoi::impl::QuadTreeNode<A, 16> NodeType;
+typedef aoi::impl::QuadTreeNode<A, 16, true> NodeType;
 
 int main() {
 

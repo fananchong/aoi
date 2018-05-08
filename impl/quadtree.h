@@ -8,10 +8,10 @@ namespace aoi
 {
     namespace impl
     {
-        template<typename TItem, unsigned NodeCapacity, typename TAlloc = AlignedMem<QuadTreeNode<TItem, NodeCapacity>>>
+        template<typename TItem, unsigned NodeCapacity, bool HaveNeighbours, typename TAlloc>
         class QuadTree {
         public:
-            using TNode = QuadTreeNode<TItem, NodeCapacity>;
+            using TNode = QuadTreeNode<TItem, NodeCapacity, HaveNeighbours>;
 
             QuadTree() : mRoot(&mAlloc, NodeTypeLeaf, nullptr, Rect()) {}
             QuadTree(const Rect& bounds) : mRoot(&mAlloc, NodeTypeLeaf, nullptr, bounds) {}
