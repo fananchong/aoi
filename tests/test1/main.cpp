@@ -1,4 +1,5 @@
 #include <impl/alloc.h>
+#include <aoi.h>
 #include <stdlib.h>
 #include <chrono>
 
@@ -31,46 +32,42 @@ public:
     int a1;
     char c1;
     float b1;
+    char d1[168];
 };
 
+typedef aoi::impl::QuadTreeNode<A, 16> NodeType;
+
 int main() {
-    aoi::impl::Mem<A> mem;
 
-    A* b = mem.New();
-    mem.Delete(b);
-
-    A* c = mem.New(1, 1.2f);
-    mem.Delete(c);
+    printf("sizeof(NodeType): %d\n", int(sizeof(NodeType)));
+    aoi::impl::Mem<NodeType> mem;
 
     size_t COUNT = 10000000;
 
     auto t1 = get_tick_count();
     for (size_t i = 0; i < COUNT; i++)
     {
-        auto temp = new A(1, 2.0f);
-        temp->a1 = int(temp->a1 + temp->b1 + temp->c1);
+        auto temp = new NodeType(&mem, aoi::impl::NodeTypeLeaf, nullptr, aoi::Rect());
         delete temp;
     }
     auto t2 = get_tick_count();
     printf("new cost:%lld\n", t2 - t1);
 
-    aoi::impl::Mem<A> mem2;
+    aoi::impl::Mem<NodeType> mem2;
     t1 = get_tick_count();
     for (size_t i = 0; i < COUNT; i++)
     {
-        auto temp = mem2.New(1, 2.0f);
-        temp->a1 = int(temp->a1 + temp->b1 + temp->c1);
+        auto temp = mem2.New(&mem, aoi::impl::NodeTypeLeaf, nullptr, aoi::Rect());
         mem2.Delete(temp);
     }
     t2 = get_tick_count();
     printf("mem cost:%lld\n", t2 - t1);
 
-    aoi::impl::AlignedMem<A> mem3;
+    aoi::impl::AlignedMem<NodeType> mem3;
     t1 = get_tick_count();
     for (size_t i = 0; i < COUNT; i++)
     {
-        auto temp = mem3.New(1, 2.0f);
-        temp->a1 = int(temp->a1 + temp->b1 + temp->c1);
+        auto temp = mem3.New(&mem, aoi::impl::NodeTypeLeaf, nullptr, aoi::Rect());
         mem3.Delete(temp);
     }
     t2 = get_tick_count();
@@ -78,3 +75,4 @@ int main() {
 
     return 0;
 }
+

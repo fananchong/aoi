@@ -56,7 +56,7 @@ namespace aoi
                 }
             }
 
-            void* _alloc(size_t size)
+            inline void* _alloc(size_t size)
             {
                 if (!mHead)
                 {
@@ -67,7 +67,7 @@ namespace aoi
                 return ptr;
             }
 
-            void _free(void* ptr)
+            inline void _free(void* ptr)
             {
                 Item* p = (Item*)ptr;
                 p->next = mHead;
