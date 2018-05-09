@@ -89,6 +89,36 @@ void _test_query(SceneType& scn, std::vector<A*>& items)
     myassert(testCount == findCount);
 }
 
+void _test_query(SceneType& scn, std::vector<A*>& items, float radius)
+{
+    unsigned testCount = 0;
+
+    size_t index = rand() % items.size();
+    aoi::Rect queryArea = aoi::Rect(
+        items[index]->X - radius,
+        items[index]->X + radius,
+        items[index]->Y - radius,
+        items[index]->Y + radius);
+
+    for (size_t i = 0; i < items.size(); i++)
+    {
+        if (queryArea.Contains(items[i]))
+        {
+            testCount++;
+        }
+    }
+
+    unsigned findCount = 0;
+    aoi::Object* ptr = scn.Query(items[index], radius);
+    while (ptr)
+    {
+        findCount++;
+        ptr = ptr->Next();
+    }
+    //printf("find obj count:%u, test count:%u, total count:%u\n", findCount, testCount, scn.GetItemCount());
+    myassert(testCount == findCount);
+}
+
 
 void test1()
 {
@@ -106,6 +136,7 @@ void test1()
     for (size_t i = 0; i < 1000; i++)
     {
         _test_query(scn, items);
+        _test_query(scn, items, float(rand() % 200 + 50));
     }
 
 
@@ -138,6 +169,7 @@ void test2()
         else
         {
             _test_query(scn, items);
+            _test_query(scn, items, float(rand() % 200 + 50));
         }
     }
 }
@@ -153,6 +185,7 @@ void test3()
 
 
     size_t COUNT = 5000;
+    size_t QUERYCOUNT = 10000;
 
     auto t1 = get_tick_count();
     for (size_t i = 0; i < COUNT; i++)
@@ -161,7 +194,7 @@ void test3()
         rand();
     }
     auto t2 = get_tick_count();
-    printf("rand cost:%lldns %fns/op\n", t2 - t1, float(t2 - t1) / COUNT);
+    //printf("rand cost:%lldns %fns/op\n", t2 - t1, float(t2 - t1) / COUNT);
     long long ttr = t2 - t1;
     long long ttrop = (long long)(float(t2 - t1) / COUNT);
 
@@ -173,17 +206,33 @@ void test3()
         _test_add(scn, items);
     }
     t2 = get_tick_count();
-    printf("insert cost:%lldns %fns/op\n", t2 - t1 - ttr, float(t2 - t1) / COUNT - ttrop);
+    printf("insert cost:%10lldns %fns/op\n", t2 - t1 - ttr, float(t2 - t1) / COUNT - ttrop);
+
+
+    std::vector<size_t> indexs;
+    for (size_t i = 0; i < QUERYCOUNT; i++)
+    {
+        indexs.push_back(rand() % items.size());
+    }
 
     t1 = get_tick_count();
-    for (size_t i = 0; i < COUNT; i++)
+    for (size_t i = 0; i < QUERYCOUNT; i++)
     {
-        float x = float(rand() % (w - r));
-        float y = float(rand() % (h - r));
-        aoi::Object* ptr = scn.Query(aoi::Rect(x, x + r, y, y + r));
+        size_t index = indexs[i];
+        aoi::Object* ptr = scn.Query(items[index], float(r));
     }
     t2 = get_tick_count();
-    printf("query cost:%lldns %fns/op\n", t2 - t1 - ttr, float(t2 - t1) / COUNT - ttrop);
+    printf("query1 cost:%10lldns %fns/op\n", t2 - t1, float(t2 - t1) / COUNT);
+
+    t1 = get_tick_count();
+    for (size_t i = 0; i < QUERYCOUNT; i++)
+    {
+        size_t index = indexs[i];
+        aoi::Rect rect(items[index]->X - r, items[index]->X + r, items[index]->Y - r, items[index]->Y + r);
+        aoi::Object* ptr = scn.Query(rect);
+    }
+    t2 = get_tick_count();
+    printf("query2 cost:%10lldns %fns/op\n", t2 - t1, float(t2 - t1) / COUNT);
 }
 
 int main()

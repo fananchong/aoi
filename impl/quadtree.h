@@ -8,7 +8,7 @@ namespace aoi
 {
     namespace impl
     {
-        template<typename TItem, unsigned NodeCapacity, typename TAlloc = AlignedMem<QuadTreeNode<TItem, NodeCapacity>>>
+        template<typename TItem, unsigned NodeCapacity, typename TAlloc>
         class QuadTree {
         public:
             using TNode = QuadTreeNode<TItem, NodeCapacity>;
@@ -30,6 +30,28 @@ namespace aoi
                 TItem* head = nullptr;
                 TItem* tail = nullptr;
                 mRoot.Query(area, head, tail);
+                tail ? tail->mQueryNext = nullptr : 0;
+                return head;
+            }
+
+            inline TItem* Query(TItem* source, float radius)
+            {
+                Rect area(source->X - radius, source->X + radius, source->Y - radius, source->Y + radius);
+                return Query(source, area);
+            }
+
+            inline TItem* Query(TItem* source, float halfExtentsX, float halfExtentsY)
+            {
+                Rect area(source->X - halfExtentsX, source->X + halfExtentsX, source->Y - halfExtentsY, source->Y + halfExtentsY);
+                return Query(source, area);
+            }
+
+            TItem* Query(TItem* source, const Rect& area)
+            {
+                TItem* head = nullptr;
+                TItem* tail = nullptr;
+                TNode* node = (TNode*)source->mNode;
+                (node && node->mBounds.Contains(area)) ? node->Query(area, head, tail) : mRoot.Query(area, head, tail);
                 tail ? tail->mQueryNext = nullptr : 0;
                 return head;
             }

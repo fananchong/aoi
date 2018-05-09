@@ -42,8 +42,6 @@ namespace aoi
             unsigned mItemCount;                     // 叶子节点上的Item数量
             TItem* mItems;                           // 叶子节点上的Items
 
-            // TODO: 邻居信息
-
         private:
             MemBase<TNode>* mAlloc;                  // 节点分配器
             void split();
