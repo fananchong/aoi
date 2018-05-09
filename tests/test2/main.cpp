@@ -222,7 +222,7 @@ void test3()
         aoi::Object* ptr = scn.Query(items[index], float(r));
     }
     t2 = get_tick_count();
-    printf("query1 cost:%10lldns %fns/op\n", t2 - t1, float(t2 - t1) / COUNT);
+    printf("query1 cost:%10lldns %fns/op\n", t2 - t1, float(t2 - t1) / QUERYCOUNT);
 
     t1 = get_tick_count();
     for (size_t i = 0; i < QUERYCOUNT; i++)
@@ -232,7 +232,7 @@ void test3()
         aoi::Object* ptr = scn.Query(rect);
     }
     t2 = get_tick_count();
-    printf("query2 cost:%10lldns %fns/op\n", t2 - t1, float(t2 - t1) / COUNT);
+    printf("query2 cost:%10lldns %fns/op\n", t2 - t1, float(t2 - t1) / QUERYCOUNT);
 }
 
 int main()
