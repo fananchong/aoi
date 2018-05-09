@@ -20,12 +20,12 @@ namespace aoi
         Object* mQueryNext;
         void* mItemNext;
 
-        template<typename TItem, unsigned NodeCapacity, bool HaveNeighbours, typename TAlloc> friend class impl::QuadTree;
-        template<typename TItem, unsigned NodeCapacity, bool HaveNeighbours> friend class impl::QuadTreeNode;
+        template<typename TItem, unsigned NodeCapacity, typename TAlloc> friend class impl::QuadTree;
+        template<typename TItem, unsigned NodeCapacity> friend class impl::QuadTreeNode;
     };
 
-    template<typename TItem, unsigned NodeCapacity, bool HaveNeighbours = true, typename TAlloc = impl::AlignedMem<impl::QuadTreeNode<TItem, NodeCapacity, HaveNeighbours>>>
-    using Scene = impl::QuadTree<TItem, NodeCapacity, HaveNeighbours, TAlloc>;
+    template<typename TItem, unsigned NodeCapacity, typename TAlloc = impl::AlignedMem<impl::QuadTreeNode<TItem, NodeCapacity>>>
+    using Scene = impl::QuadTree<TItem, NodeCapacity, TAlloc>;
 }
 
 #endif

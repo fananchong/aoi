@@ -3,7 +3,6 @@
 
 #include "alloc.h"
 #include "rect.h"
-#include "vec.h"
 #include <memory>
 
 namespace aoi
@@ -18,13 +17,13 @@ namespace aoi
 
         const unsigned ChildrenNum = 4;
 
-        template<typename TItem, unsigned NodeCapacity, bool HaveNeighbours>
+        template<typename TItem, unsigned NodeCapacity>
         class QuadTreeNode
         {
         public:
-            using TNode = QuadTreeNode<TItem, NodeCapacity, HaveNeighbours>;
+            using TNode = QuadTreeNode<TItem, NodeCapacity>;
 
-            QuadTreeNode(MemBase<TNode>* alloc, ENodeType type, TNode* parent, const Rect& bounds);
+            QuadTreeNode(MemBase<TNode>* alloc, ENodeType type, QuadTreeNode* parent, const Rect& bounds);
             ~QuadTreeNode();
 
             bool Insert(TItem* item);
@@ -37,12 +36,13 @@ namespace aoi
             unsigned mLevel;
 #endif
             Rect mBounds;                            // 节点边框范围
-            TNode* mParent;                          // 父节点
+            QuadTreeNode* mParent;                   // 父节点
             ENodeType mNodeType;                     // 节点类型
-            TNode* mChildrens[ChildrenNum];          // 孩子节点
+            QuadTreeNode* mChildrens[ChildrenNum];   // 孩子节点
             unsigned mItemCount;                     // 叶子节点上的Item数量
             TItem* mItems;                           // 叶子节点上的Items
-            vec_void_t mNeighbours;                  // 邻居信息
+
+            // TODO: 邻居信息
 
         private:
             MemBase<TNode>* mAlloc;                  // 节点分配器

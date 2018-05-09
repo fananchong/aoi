@@ -6,8 +6,8 @@ namespace aoi
 {
     namespace impl
     {
-        template<typename TItem, unsigned NodeCapacity, bool HaveNeighbours>
-        QuadTreeNode<TItem, NodeCapacity, HaveNeighbours>::QuadTreeNode(MemBase<TNode>* alloc, ENodeType type, TNode* parent, const Rect& bounds)
+        template<typename TItem, unsigned NodeCapacity>
+        QuadTreeNode<TItem, NodeCapacity>::QuadTreeNode(MemBase<TNode>* alloc, ENodeType type, QuadTreeNode* parent, const Rect& bounds)
             : mAlloc(alloc)
             , mParent(parent)
             , mNodeType(type)
@@ -21,14 +21,14 @@ namespace aoi
             memset(mChildrens, 0, sizeof(mChildrens));
         }
 
-        template<typename TItem, unsigned NodeCapacity, bool HaveNeighbours>
-        QuadTreeNode<TItem, NodeCapacity, HaveNeighbours>::~QuadTreeNode()
+        template<typename TItem, unsigned NodeCapacity>
+        QuadTreeNode<TItem, NodeCapacity>::~QuadTreeNode()
         {
 
         }
 
-        template<typename TItem, unsigned NodeCapacity, bool HaveNeighbours>
-        bool QuadTreeNode<TItem, NodeCapacity, HaveNeighbours>::Insert(TItem* item)
+        template<typename TItem, unsigned NodeCapacity>
+        bool QuadTreeNode<TItem, NodeCapacity>::Insert(TItem* item)
         {
             if (mNodeType == NodeTypeNormal)
             {
@@ -61,8 +61,8 @@ namespace aoi
             }
         }
 
-        template<typename TItem, unsigned NodeCapacity, bool HaveNeighbours>
-        void QuadTreeNode<TItem, NodeCapacity, HaveNeighbours>::split()
+        template<typename TItem, unsigned NodeCapacity>
+        void QuadTreeNode<TItem, NodeCapacity>::split()
         {
             assert(mNodeType == NodeTypeLeaf);
             mNodeType = NodeTypeNormal;
@@ -105,14 +105,10 @@ namespace aoi
             }
             mItemCount = 0;
             mItems = nullptr;
-
-            // TODO: 构建邻居信息
-
-
         }
 
-        template<typename TItem, unsigned NodeCapacity, bool HaveNeighbours>
-        bool QuadTreeNode<TItem, NodeCapacity, HaveNeighbours>::Remove(TItem* item)
+        template<typename TItem, unsigned NodeCapacity>
+        bool QuadTreeNode<TItem, NodeCapacity>::Remove(TItem* item)
         {
             assert(mNodeType == NodeTypeLeaf);
             assert(mItems);
@@ -136,8 +132,8 @@ namespace aoi
             return false;
         }
 
-        template<typename TItem, unsigned NodeCapacity, bool HaveNeighbours>
-        void QuadTreeNode<TItem, NodeCapacity, HaveNeighbours>::tryMerge()
+        template<typename TItem, unsigned NodeCapacity>
+        void QuadTreeNode<TItem, NodeCapacity>::tryMerge()
         {
             TNode* node = mParent;
             while (node) {
@@ -173,9 +169,6 @@ namespace aoi
                             it = head;
                         }
                         mAlloc->Delete(childrens[i]);
-
-                        // TODO: 构建邻居信息
-
                     }
                     node = node->mParent;
                 }
@@ -186,8 +179,8 @@ namespace aoi
             }
         }
 
-        template<typename TItem, unsigned NodeCapacity, bool HaveNeighbours>
-        void QuadTreeNode<TItem, NodeCapacity, HaveNeighbours>::Query(const Rect& area, TItem*& head, TItem*& tail)
+        template<typename TItem, unsigned NodeCapacity>
+        void QuadTreeNode<TItem, NodeCapacity>::Query(const Rect& area, TItem*& head, TItem*& tail)
         {
             if (mNodeType == NodeTypeNormal)
             {
@@ -211,8 +204,8 @@ namespace aoi
             }
         }
 
-        template<typename TItem, unsigned NodeCapacity, bool HaveNeighbours>
-        unsigned QuadTreeNode<TItem, NodeCapacity, HaveNeighbours>::GetItemCount()
+        template<typename TItem, unsigned NodeCapacity>
+        unsigned QuadTreeNode<TItem, NodeCapacity>::GetItemCount()
         {
             unsigned count = 0;
             if (mNodeType == NodeTypeNormal)
