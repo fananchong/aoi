@@ -2,7 +2,7 @@
 #define __AOI_IMPL_QUADTREENODE_H__
 
 #include "alloc.h"
-#include "rect.h"
+#include "../rect.h"
 #include <memory>
 
 namespace aoi
