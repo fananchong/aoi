@@ -6,29 +6,27 @@ namespace aoi
 {
     namespace impl
     {
-        template<typename TItem, unsigned NodeCapacity>
-        QuadTreeNode<TItem, NodeCapacity>::QuadTreeNode(MemBase<TNode>* alloc, ENodeType type, QuadTreeNode* parent, const Rect& bounds)
-            : mAlloc(alloc)
+        template<typename TItem, unsigned NodeCapacity, unsigned LevelLimit>
+        QuadTreeNode<TItem, NodeCapacity, LevelLimit>::QuadTreeNode(unsigned level, MemBase<TNode>* alloc, ENodeType type, QuadTreeNode* parent, const Rect& bounds)
+            : mLevel(level)
+            , mAlloc(alloc)
             , mParent(parent)
             , mNodeType(type)
             , mBounds(bounds)
             , mItemCount(0)
             , mItems(nullptr)
-#ifdef _DEBUG
-            , mLevel(0)
-#endif
         {
             memset(mChildrens, 0, sizeof(mChildrens));
         }
 
-        template<typename TItem, unsigned NodeCapacity>
-        QuadTreeNode<TItem, NodeCapacity>::~QuadTreeNode()
+        template<typename TItem, unsigned NodeCapacity, unsigned LevelLimit>
+        QuadTreeNode<TItem, NodeCapacity, LevelLimit>::~QuadTreeNode()
         {
 
         }
 
-        template<typename TItem, unsigned NodeCapacity>
-        bool QuadTreeNode<TItem, NodeCapacity>::Insert(TItem* item)
+        template<typename TItem, unsigned NodeCapacity, unsigned LevelLimit>
+        bool QuadTreeNode<TItem, NodeCapacity, LevelLimit>::Insert(TItem* item)
         {
             if (mNodeType == NodeTypeNormal)
             {
@@ -55,14 +53,18 @@ namespace aoi
                 }
                 else
                 {
+                    if (mLevel + 1 >= LevelLimit)
+                    {
+                        return false;
+                    }
                     split();
                     goto LABLE_NORMAL;
                 }
             }
         }
 
-        template<typename TItem, unsigned NodeCapacity>
-        void QuadTreeNode<TItem, NodeCapacity>::split()
+        template<typename TItem, unsigned NodeCapacity, unsigned LevelLimit>
+        void QuadTreeNode<TItem, NodeCapacity, LevelLimit>::split()
         {
             assert(mNodeType == NodeTypeLeaf);
             mNodeType = NodeTypeNormal;
@@ -84,17 +86,10 @@ namespace aoi
             // 第四象限，右下
             Rect rect3(mBounds.MidX(), mBounds.Right(), mBounds.Bottom(), mBounds.MidY());
 
-            mChildrens[0] = mAlloc->New(mAlloc, NodeTypeLeaf, this, rect0);
-            mChildrens[1] = mAlloc->New(mAlloc, NodeTypeLeaf, this, rect1);
-            mChildrens[2] = mAlloc->New(mAlloc, NodeTypeLeaf, this, rect2);
-            mChildrens[3] = mAlloc->New(mAlloc, NodeTypeLeaf, this, rect3);
-
-#ifdef _DEBUG
-            mChildrens[0]->mLevel = mLevel + 1;
-            mChildrens[1]->mLevel = mLevel + 1;
-            mChildrens[2]->mLevel = mLevel + 1;
-            mChildrens[3]->mLevel = mLevel + 1;
-#endif
+            mChildrens[0] = mAlloc->New(mLevel + 1, mAlloc, NodeTypeLeaf, this, rect0);
+            mChildrens[1] = mAlloc->New(mLevel + 1, mAlloc, NodeTypeLeaf, this, rect1);
+            mChildrens[2] = mAlloc->New(mLevel + 1, mAlloc, NodeTypeLeaf, this, rect2);
+            mChildrens[3] = mAlloc->New(mLevel + 1, mAlloc, NodeTypeLeaf, this, rect3);
 
             for (TItem* it = mItems; it;)
             {
@@ -105,10 +100,10 @@ namespace aoi
             }
             mItemCount = 0;
             mItems = nullptr;
-        }
+    }
 
-        template<typename TItem, unsigned NodeCapacity>
-        bool QuadTreeNode<TItem, NodeCapacity>::Remove(TItem* item)
+        template<typename TItem, unsigned NodeCapacity, unsigned LevelLimit>
+        bool QuadTreeNode<TItem, NodeCapacity, LevelLimit>::Remove(TItem* item)
         {
             assert(mNodeType == NodeTypeLeaf);
             assert(mItems);
@@ -132,8 +127,8 @@ namespace aoi
             return false;
         }
 
-        template<typename TItem, unsigned NodeCapacity>
-        void QuadTreeNode<TItem, NodeCapacity>::tryMerge()
+        template<typename TItem, unsigned NodeCapacity, unsigned LevelLimit>
+        void QuadTreeNode<TItem, NodeCapacity, LevelLimit>::tryMerge()
         {
             TNode* node = mParent;
             while (node) {
@@ -176,11 +171,11 @@ namespace aoi
                 {
                     break;
                 }
+                }
             }
-        }
 
-        template<typename TItem, unsigned NodeCapacity>
-        void QuadTreeNode<TItem, NodeCapacity>::Query(const Rect& area, TItem*& head, TItem*& tail)
+        template<typename TItem, unsigned NodeCapacity, unsigned LevelLimit>
+        void QuadTreeNode<TItem, NodeCapacity, LevelLimit>::Query(const Rect& area, TItem*& head, TItem*& tail)
         {
             if (mNodeType == NodeTypeNormal)
             {
@@ -204,8 +199,8 @@ namespace aoi
             }
         }
 
-        template<typename TItem, unsigned NodeCapacity>
-        unsigned QuadTreeNode<TItem, NodeCapacity>::GetItemCount()
+        template<typename TItem, unsigned NodeCapacity, unsigned LevelLimit>
+        unsigned QuadTreeNode<TItem, NodeCapacity, LevelLimit>::GetItemCount()
         {
             unsigned count = 0;
             if (mNodeType == NodeTypeNormal)
@@ -221,5 +216,5 @@ namespace aoi
             }
             return count;
         }
-    }
+        }
 }

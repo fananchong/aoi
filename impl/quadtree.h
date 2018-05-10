@@ -8,13 +8,13 @@ namespace aoi
 {
     namespace impl
     {
-        template<typename TItem, unsigned NodeCapacity, typename TAlloc>
+        template<typename TItem, unsigned NodeCapacity, unsigned LevelLimit, typename TAlloc>
         class QuadTree {
         public:
-            using TNode = QuadTreeNode<TItem, NodeCapacity>;
+            using TNode = QuadTreeNode<TItem, NodeCapacity, LevelLimit>;
 
             QuadTree() : mRoot(&mAlloc, NodeTypeLeaf, nullptr, Rect()) {}
-            QuadTree(const Rect& bounds) : mRoot(&mAlloc, NodeTypeLeaf, nullptr, bounds) {}
+            QuadTree(const Rect& bounds) : mRoot(0, &mAlloc, NodeTypeLeaf, nullptr, bounds) {}
             ~QuadTree() {}
 
             bool Insert(TItem* item) { return mRoot.Insert(item); }

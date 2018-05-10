@@ -17,13 +17,13 @@ namespace aoi
 
         const unsigned ChildrenNum = 4;
 
-        template<typename TItem, unsigned NodeCapacity>
+        template<typename TItem, unsigned NodeCapacity, unsigned LevelLimit>
         class QuadTreeNode
         {
         public:
-            using TNode = QuadTreeNode<TItem, NodeCapacity>;
+            using TNode = QuadTreeNode<TItem, NodeCapacity, LevelLimit>;
 
-            QuadTreeNode(MemBase<TNode>* alloc, ENodeType type, QuadTreeNode* parent, const Rect& bounds);
+            QuadTreeNode(unsigned level, MemBase<TNode>* alloc, ENodeType type, QuadTreeNode* parent, const Rect& bounds);
             ~QuadTreeNode();
 
             bool Insert(TItem* item);
@@ -32,9 +32,7 @@ namespace aoi
             unsigned GetItemCount();
 
         public:
-#ifdef _DEBUG
-            unsigned mLevel;
-#endif
+            unsigned mLevel;                         // 当前节点所在层级
             Rect mBounds;                            // 节点边框范围
             QuadTreeNode* mParent;                   // 父节点
             ENodeType mNodeType;                     // 节点类型

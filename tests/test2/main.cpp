@@ -235,6 +235,19 @@ void test3()
     printf("query2 cost:%12lldns %12.3fns/op %12.3fms/op\n", t2 - t1, float(t2 - t1) / QUERYCOUNT, float(t2 - t1) / QUERYCOUNT / 1000000);
 }
 
+void test4()
+{
+    aoi::Rect rect(0, 1000, 0, 1000);
+    SceneType scn(rect);
+    for (size_t i = 0; i < 10000; i++)
+    {
+        float x = 0;
+        float y = 0;
+        A* temp = new A(x, y);
+        myassert(scn.Insert(temp));
+    }
+}
+
 int main()
 {
     srand((unsigned)time(0));
@@ -242,6 +255,6 @@ int main()
     //test1();
     //test2();
     test3();
-
+    //test4();
     return 0;
 }
