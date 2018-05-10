@@ -199,7 +199,7 @@ void test3()
     long long ttrop = (long long)(float(t2 - t1) / PLAYER_COUNT);
 
     printf("width:%u, heigth:%u\n", w, h);
-    printf("player count: %u\n", unsigned(PLAYER_COUNT));
+    printf("player count: %u, query redius: %f\n", unsigned(PLAYER_COUNT), r);
 
     std::vector<A*> items;
     t1 = get_tick_count();
