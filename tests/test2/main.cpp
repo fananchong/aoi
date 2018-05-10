@@ -176,9 +176,9 @@ void test2()
 
 void test3()
 {
-    unsigned w = 8000;
-    unsigned h = 8000;
-    unsigned r = 50;
+    unsigned w = 1000;
+    unsigned h = 1000;
+    unsigned r = 0.6;
 
     aoi::Rect rect(0, float(w), 0, float(h));
     SceneType scn(rect);
@@ -206,7 +206,7 @@ void test3()
         _test_add(scn, items);
     }
     t2 = get_tick_count();
-    printf("insert cost:%10lldns %fns/op\n", t2 - t1 - ttr, float(t2 - t1) / COUNT - ttrop);
+    printf("insert cost:%12lldns %12.3fns/op\n", t2 - t1 - ttr, float(t2 - t1) / COUNT - ttrop);
 
 
     std::vector<size_t> indexs;
@@ -218,28 +218,33 @@ void test3()
     t1 = get_tick_count();
     for (size_t i = 0; i < QUERYCOUNT; i++)
     {
-        size_t index = indexs[i];
-        aoi::Object* ptr = scn.Query(items[index], float(r));
+        for (size_t j = 0; j < COUNT; j++)
+        {
+            aoi::Rect rect(items[j]->X - r, items[j]->X + r, items[j]->Y - r, items[j]->Y + r);
+            aoi::Object* ptr = scn.Query(items[j], float(r));
+        }
     }
     t2 = get_tick_count();
-    printf("query1 cost:%10lldns %fns/op\n", t2 - t1, float(t2 - t1) / QUERYCOUNT);
+    printf("query1 cost:%12lldns %12.3fns/op %12.3fms/op\n", t2 - t1, float(t2 - t1) / QUERYCOUNT, float(t2 - t1) / QUERYCOUNT / 1000000);
 
     t1 = get_tick_count();
     for (size_t i = 0; i < QUERYCOUNT; i++)
     {
-        size_t index = indexs[i];
-        aoi::Rect rect(items[index]->X - r, items[index]->X + r, items[index]->Y - r, items[index]->Y + r);
-        aoi::Object* ptr = scn.Query(rect);
+        for (size_t j = 0; j < COUNT; j++)
+        {
+            aoi::Rect rect(items[j]->X - r, items[j]->X + r, items[j]->Y - r, items[j]->Y + r);
+            aoi::Object* ptr = scn.Query(rect);
+        }
     }
     t2 = get_tick_count();
-    printf("query2 cost:%10lldns %fns/op\n", t2 - t1, float(t2 - t1) / QUERYCOUNT);
+    printf("query2 cost:%12lldns %12.3fns/op %12.3fms/op\n", t2 - t1, float(t2 - t1) / QUERYCOUNT, float(t2 - t1) / QUERYCOUNT / 1000000);
 }
 
 int main()
 {
     srand((unsigned)time(0));
 
-    test1();
+    //test1();
     //test2();
     test3();
 
