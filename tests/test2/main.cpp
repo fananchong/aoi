@@ -178,17 +178,17 @@ void test3()
 {
     unsigned w = 1000;
     unsigned h = 1000;
-    unsigned r = 0.6;
+    float r = 0.6f;
 
     aoi::Rect rect(0, float(w), 0, float(h));
     SceneType scn(rect);
 
 
-    size_t COUNT = 5000;
+    size_t PLAYER_COUNT = 5000;
     size_t QUERYCOUNT = 10000;
 
     auto t1 = get_tick_count();
-    for (size_t i = 0; i < COUNT; i++)
+    for (size_t i = 0; i < PLAYER_COUNT; i++)
     {
         rand();
         rand();
@@ -196,29 +196,24 @@ void test3()
     auto t2 = get_tick_count();
     //printf("rand cost:%lldns %fns/op\n", t2 - t1, float(t2 - t1) / COUNT);
     long long ttr = t2 - t1;
-    long long ttrop = (long long)(float(t2 - t1) / COUNT);
+    long long ttrop = (long long)(float(t2 - t1) / PLAYER_COUNT);
+
+    printf("width:%u, heigth:%u\n", w, h);
+    printf("player count: %u\n", unsigned(PLAYER_COUNT));
 
     std::vector<A*> items;
-
     t1 = get_tick_count();
-    for (size_t i = 0; i < COUNT; i++)
+    for (size_t i = 0; i < PLAYER_COUNT; i++)
     {
         _test_add(scn, items);
     }
     t2 = get_tick_count();
-    printf("insert cost:%12lldns %12.3fns/op\n", t2 - t1 - ttr, float(t2 - t1) / COUNT - ttrop);
-
-
-    std::vector<size_t> indexs;
-    for (size_t i = 0; i < QUERYCOUNT; i++)
-    {
-        indexs.push_back(rand() % items.size());
-    }
+    printf("insert cost:%12lldns %12.3fns/op\n", t2 - t1 - ttr, float(t2 - t1) / PLAYER_COUNT - ttrop);
 
     t1 = get_tick_count();
     for (size_t i = 0; i < QUERYCOUNT; i++)
     {
-        for (size_t j = 0; j < COUNT; j++)
+        for (size_t j = 0; j < PLAYER_COUNT; j++)
         {
             aoi::Rect rect(items[j]->X - r, items[j]->X + r, items[j]->Y - r, items[j]->Y + r);
             aoi::Object* ptr = scn.Query(items[j], float(r));
@@ -230,7 +225,7 @@ void test3()
     t1 = get_tick_count();
     for (size_t i = 0; i < QUERYCOUNT; i++)
     {
-        for (size_t j = 0; j < COUNT; j++)
+        for (size_t j = 0; j < PLAYER_COUNT; j++)
         {
             aoi::Rect rect(items[j]->X - r, items[j]->X + r, items[j]->Y - r, items[j]->Y + r);
             aoi::Object* ptr = scn.Query(rect);
