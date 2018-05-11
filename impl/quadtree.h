@@ -13,7 +13,7 @@ namespace aoi
         public:
             using TNode = QuadTreeNode<TItem, NodeCapacity, LevelLimit>;
 
-            QuadTree() : mRoot(&mAlloc, NodeTypeLeaf, nullptr, Rect()) {}
+            QuadTree() : mRoot(0, &mAlloc, NodeTypeLeaf, nullptr, Rect()) {}
             QuadTree(const Rect& bounds) : mRoot(0, &mAlloc, NodeTypeLeaf, nullptr, bounds) {}
             ~QuadTree() {}
 
