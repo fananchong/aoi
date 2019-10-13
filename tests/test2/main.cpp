@@ -24,7 +24,7 @@ if (!(X))\
 }
 #endif
 
-// –Ë“™ºÃ≥– aoi::Object
+// Need to inherit aoi::Object
 class A : public aoi::Object
 {
 public:
@@ -125,14 +125,14 @@ void test1()
     aoi::Rect rect(0, 1000, 0, 1000);
     SceneType scn(rect);
 
-    // ≤‚ ‘≤Â»Î
+    // Test insertion
     std::vector<A*> items;
     for (size_t i = 0; i < 8192; i++)
     {
         _test_add(scn, items);
     }
 
-    // ≤‚ ‘≤È—Ø
+    // Test query
     for (size_t i = 0; i < 1000; i++)
     {
         _test_query(scn, items);
@@ -140,7 +140,7 @@ void test1()
     }
 
 
-    // ≤‚ ‘…æ≥˝
+    // Test delete
     unsigned itemsNum = items.size();
     _test_delete(scn, items, itemsNum);
     items.clear();

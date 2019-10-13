@@ -11,8 +11,8 @@ namespace aoi
     {
         enum ENodeType
         {
-            NodeTypeNormal = 0,  // 非叶节点
-            NodeTypeLeaf = 1,    // 叶子节点
+            NodeTypeNormal = 0,  // Non-leaf node
+            NodeTypeLeaf = 1,    // Leaf node
         };
 
         const unsigned ChildrenNum = 4;
@@ -32,16 +32,16 @@ namespace aoi
             unsigned GetItemCount();
 
         public:
-            unsigned mLevel;                         // 当前节点所在层级
-            Rect mBounds;                            // 节点边框范围
-            QuadTreeNode* mParent;                   // 父节点
-            ENodeType mNodeType;                     // 节点类型
-            QuadTreeNode* mChildrens[ChildrenNum];   // 孩子节点
-            unsigned mItemCount;                     // 叶子节点上的Item数量
-            TItem* mItems;                           // 叶子节点上的Items
+            unsigned mLevel;                         // The level at which the current node is located
+            Rect mBounds;                            // Node border range
+            QuadTreeNode* mParent;                   // Parent node
+            ENodeType mNodeType;                     // Node type
+            QuadTreeNode* mChildrens[ChildrenNum];   // Child node
+            unsigned mItemCount;                     // Number of items on the leaf node
+            TItem* mItems;                           // Items on the leaf node
 
         private:
-            MemBase<TNode>* mAlloc;                  // 节点分配器
+            MemBase<TNode>* mAlloc;                  // Node allocator
             void split();
             void tryMerge();
         };

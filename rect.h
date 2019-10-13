@@ -8,10 +8,10 @@ namespace aoi
     enum EQuadrant
     {
         UnknowQuadrant = 0,
-        RightTop = 1,    // 右上：象限一
-        LeftTop = 2,     //左上：象限二
-        LeftDown = 3,    // 左下：象限三
-        RightDown = 4,   // 右下：象限四
+        RightTop = 1,    // Top right: quadrant 1
+        LeftTop = 2,     // Top left: quadrant 2
+        LeftDown = 3,    // Bottom left: Quadrant 3
+        RightDown = 4,   // Bottom right: Quadrant 4
     };
 
     class Rect

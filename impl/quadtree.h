@@ -76,8 +76,8 @@ namespace aoi
             inline void SetBounds(const Rect& rect) { mRoot.mBounds = rect; }
 
         private:
-            TAlloc mAlloc;       // 节点分配器
-            TNode mRoot;         // 根节点
+            TAlloc mAlloc;
+            TNode mRoot;
         };
     }
 }

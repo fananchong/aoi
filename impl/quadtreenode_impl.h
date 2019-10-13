@@ -74,16 +74,16 @@ namespace aoi
                 , mLevel, mBounds.Left(), mBounds.Right(), mBounds.Bottom(), mBounds.Top());
 #endif
 
-            // 第一象限，右上
+            // First quadrant, top right
             Rect rect0(mBounds.MidX(), mBounds.Right(), mBounds.MidY(), mBounds.Top());
 
-            // 第二象限，左上
+            // Second quadrant, upper left
             Rect rect1(mBounds.Left(), mBounds.MidX(), mBounds.MidY(), mBounds.Top());
 
-            // 第三象限，左下
+            // Third quadrant, bottom left
             Rect rect2(mBounds.Left(), mBounds.MidX(), mBounds.Bottom(), mBounds.MidY());
 
-            // 第四象限，右下
+            // Fourth quadrant, bottom right
             Rect rect3(mBounds.MidX(), mBounds.Right(), mBounds.Bottom(), mBounds.MidY());
 
             mChildrens[0] = mAlloc->New(mLevel + 1, mAlloc, NodeTypeLeaf, this, rect0);
